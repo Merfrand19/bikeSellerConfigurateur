@@ -1,0 +1,37 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "d88590f3a25cea9cf47aa48d4746a525"
+application_url = "https://hospital-tracker-hypothetical-tm.trycloudflare.com"
+embedded = true
+name = "bikeSellerConfigurateur"
+handle = "bikesellerconfigurateur"
+
+[webhooks]
+api_version = "2025-01"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products"
+
+[auth]
+redirect_urls = [
+  "https://hospital-tracker-hypothetical-tm.trycloudflare.com/auth/callback",
+  "https://hospital-tracker-hypothetical-tm.trycloudflare.com/auth/shopify/callback",
+  "https://hospital-tracker-hypothetical-tm.trycloudflare.com/api/auth/callback"
+]
+
+[pos]
+embedded = false
+
+[build]
+dev_store_url = "merfrand-test.myshopify.com"
+automatically_update_urls_on_dev = true
+include_config_on_deploy = true
