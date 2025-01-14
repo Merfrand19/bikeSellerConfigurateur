@@ -1,4 +1,4 @@
-{{ 'ratings.stars.label' | t }}:
+{% comment %} {{ 'ratings.stars.label' | t }}:
 
 {%- for i in (1..rating) -%}
   ★
@@ -6,5 +6,5 @@
 {%- assign blank_stars = 5 | minus: rating -%}
 {%- for i in (1..blank_stars) -%}
   ☆
-{%- endfor -%}
+{%- endfor -%} {% endcomment %}
 

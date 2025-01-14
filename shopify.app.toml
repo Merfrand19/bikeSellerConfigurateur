@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "d88590f3a25cea9cf47aa48d4746a525"
-application_url = "https://hospital-tracker-hypothetical-tm.trycloudflare.com"
+application_url = "https://ye-courts-organisation-pointed.trycloudflare.com"
 embedded = true
 name = "bikeSellerConfigurateur"
 handle = "bikesellerconfigurateur"
@@ -23,9 +23,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://hospital-tracker-hypothetical-tm.trycloudflare.com/auth/callback",
-  "https://hospital-tracker-hypothetical-tm.trycloudflare.com/auth/shopify/callback",
-  "https://hospital-tracker-hypothetical-tm.trycloudflare.com/api/auth/callback"
+  "https://ye-courts-organisation-pointed.trycloudflare.com/auth/callback",
+  "https://ye-courts-organisation-pointed.trycloudflare.com/auth/shopify/callback",
+  "https://ye-courts-organisation-pointed.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
