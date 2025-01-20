@@ -1,12 +1,20 @@
 <div class="merfrand-configurateur-section">
-  <button id="openPageButton" class="nmerfrandbutton" 
-    style="background-color: {{ block.settings.btn_back_color }};
-            border: {{ block.settings.btn_back_color }}
-           font-size: {{ block.settings.btn_text_font_size }}; 
-           {% if block.settings.btn_is_bold %} font-weight: bold; {% endif %}">
+  <button 
+    id="openPageButton" 
+    {% if block.settings.use_shopify_addToCart %} 
+      class="btn btn--full add-to-cart" style="width:100%" 
+    {% else %} 
+      class="merfrandbutton" 
+      style="background-color: {{ block.settings.btn_back_color }};
+             border: {{ block.settings.btn_back_color }};
+             font-size: {{ block.settings.btn_text_font_size }};
+             {% if block.settings.btn_is_bold %} font-weight: bold; {% endif %}
+      " 
+    {% endif %}>
     {{ block.settings.texte_bouton }}
   </button>
 </div>
+
 
 
 <div id="fullPageOverlay" class="hidden-overlay">
@@ -19,7 +27,7 @@
 
 <style>
   /* Bouton principal */
-.merfrand-button {
+.merfrandbutton {
   width: 100%;
   padding: 10px 20px;
   font-size: 16px;
@@ -30,7 +38,7 @@
   transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.merfrand-button:hover {
+.merfrandbutton:hover {
   background-color: #005bb5;
   transform: scale(1.05);
 }
@@ -112,43 +120,44 @@
       const itemsToAdd = [];
 
       // Ajouter les produits sélectionnés
-      data.selectedProducts.forEach(productId => {
-        itemsToAdd.push({
-          id: productId,
-          quantity: 1
+      if (data.selectedProducts && data.selectedProducts.length > 0) {
+        data.selectedProducts.forEach(productId => {
+          itemsToAdd.push({
+            id: productId,
+            quantity: 1
+          });
         });
-      });
+      } else {
+        console.log("Aucun produit sélectionné");
+      }
 
       // Ajouter la matière et finition
       const matiereValue = Number(data.matiere.split(' - ')[1]);
-const finitionValue = Number(data.finition.split(' - ')[1]);
+        const finitionValue = Number(data.finition.split(' - ')[1]);
 
-if (matiereValue !== 0) {
-  itemsToAdd.push({ id: matiereValue, quantity: 1 });
-}
+        if (matiereValue !== 0) {
+          itemsToAdd.push({ id: matiereValue, quantity: 1 });
+        }
 
-if (finitionValue !== 0) {
-  itemsToAdd.push({ id: finitionValue, quantity: 1 });
-}
+        if (finitionValue !== 0) {
+          itemsToAdd.push({ id: finitionValue, quantity: 1 });
+        }
 
-itemsToAdd.push({
-  id: data.couleur,
-  quantity: 1,
-  properties: {
-    marque: data.marque,
-    modele: data.modele,
-    annee: data.annee,
-    pseudo: data.pseudo,
-    numero: data.numero,
-    plaquePhare: data.plaquePhare,
-    gardeBoue: data.gardeBoue,
-    matiere: data.matiere.split(' - ')[0],
-    finition: data.finition.split(' - ')[0]
-  }
-});
-
-
-      console.log('Items préparés pour ajout au panier :', itemsToAdd);
+        itemsToAdd.push({
+          id: data.couleur,
+          quantity: 1,
+          properties: {
+            marque: data.marque,
+            modele: data.modele,
+            annee: data.annee,
+            pseudo: data.pseudo,
+            numero: data.numero,
+            plaquePhare: data.plaquePhare,
+            gardeBoue: data.gardeBoue,
+            matiere: data.matiere.split(' - ')[0],
+            finition: data.finition.split(' - ')[0]
+          }
+        });
 
       try {
         // Envoyer la requête d'ajout au panier
@@ -166,13 +175,12 @@ itemsToAdd.push({
         }
 
         const cartData = await response.json();
-        console.log('Produits ajoutés au panier :', cartData);
 
         window.location.href = '/checkout';
 
         // Fermer l'overlay après succès
         overlay.classList.remove('visible-overlay');
-        alert('Produits ajoutés au panier avec succès !');
+        // alert('Produits ajoutés au panier avec succès !');
       } catch (error) {
         console.error('Erreur réseau ou autre lors de l\'ajout au panier :', error);
         alert('Une erreur est survenue. Veuillez réessayer.');
@@ -183,41 +191,53 @@ itemsToAdd.push({
 
 
 {% schema %}
-{
-  "name": "Bouton configurateur",
-  "target": "section",
-  "enabled_on": {
-    "templates": ["product"]
-  },
-  "settings": [
-     {
+  {
+    "name": "Bouton configurateur",
+    "target": "section",
+    "enabled_on": {
+      "templates": ["product"]
+    },
+    "settings": [
+      {
         "type": "text",
         "id": "texte_bouton",
         "label": "Texte sur le bouton",
         "default": "Start customization"
       },
-     {
+      {
+        "type": "checkbox",
+        "id": "use_shopify_addToCart",
+        "label": "Designer le bouton comme le texte Ajouter au panier",
+        "default": true
+      },
+      {
         "type": "color",
         "id": "btn_back_color",
-        "label": "Sélectionner la couleur de l'arrière plan"
+        "label": "Sélectionner la couleur de l'arrière-plan",
+        "default": "#ffffff"
       },
       {
         "type": "color",
         "id": "btn_text_color",
-        "label": "Sélectionner la couleur du texte"
+        "label": "Sélectionner la couleur du texte",
+        "default": "#000000"
       },
       {
-        "type": "number",
+        "type": "range",
         "id": "btn_text_font_size",
-        "label": "Taille de la police"
+        "label": "Taille de la police",
+        "default": 16,
+        "min": 10,
+        "max": 100,
+        "step": 1
       },
       {
         "type": "checkbox",
         "id": "btn_is_bold",
-        "default": true,
-        "label": "Mettre le texte en gras"
+        "label": "Mettre le texte en gras",
+        "default": true
       }
-
-  ],
-}
-{% endschema %}
+    ]
+  }
+  {% endschema %}
+  
