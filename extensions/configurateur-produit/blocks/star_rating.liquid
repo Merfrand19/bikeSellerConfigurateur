@@ -1,6 +1,5 @@
-<!-- section-nice-button.liquid -->
 <div class="nice-button-container">
-  <button id="openPageButton" class="nice-button">Cliquez ici</button>
+  <button id="openPageButton" class="nice-button" style="background-color: {{  block.settings.btn_color  }};"> {{ block.settings.texte_bouton }} </button>
 </div>
 
 <div id="fullPageOverlay" class="hidden-overlay">
@@ -16,7 +15,6 @@
 .nice-button {
   padding: 10px 20px;
   font-size: 16px;
-  background-color: #007aff;
   color: white;
   border: none;
   border-radius: 5px;
@@ -76,6 +74,7 @@
     const body = document.querySelector('body');
     const overlay = document.getElementById('fullPageOverlay');
 
+    // Ajouter l'overlay au body
     body.appendChild(overlay);
 
     const openButton = document.getElementById('openPageButton');
@@ -90,35 +89,111 @@
     closeButton.addEventListener('click', function () {
       overlay.classList.remove('visible-overlay');
     });
+
+    // Écouter les messages venant de l'iframe
+    window.addEventListener('message', async function (event) {
+      if (event.origin !== 'https://frontend-configurateur-emws.vercel.app') {
+        console.warn('Message non sécurisé ignoré.');
+        return;
+      }
+
+      console.log('Données JSON reçues de l\'iframe :', event.data);
+      const data = event.data;
+
+      // Préparer les produits à ajouter au panier
+      const itemsToAdd = [];
+
+      // Ajouter les produits sélectionnés
+      data.selectedProducts.forEach(productId => {
+        itemsToAdd.push({
+          id: productId,
+          quantity: 1
+        });
+      });
+
+      // Ajouter la matière et finition
+      const matiereValue = Number(data.matiere.split(' - ')[1]);
+const finitionValue = Number(data.finition.split(' - ')[1]);
+
+if (matiereValue !== 0) {
+  itemsToAdd.push({ id: matiereValue, quantity: 1 });
+}
+
+if (finitionValue !== 0) {
+  itemsToAdd.push({ id: finitionValue, quantity: 1 });
+}
+
+itemsToAdd.push({
+  id: data.couleur,
+  quantity: 1,
+  properties: {
+    marque: data.marque,
+    modele: data.modele,
+    annee: data.annee,
+    pseudo: data.pseudo,
+    numero: data.numero,
+    plaquePhare: data.plaquePhare,
+    gardeBoue: data.gardeBoue,
+    matiere: data.matiere.split(' - ')[0],
+    finition: data.finition.split(' - ')[0]
+  }
+});
+
+
+      console.log('Items préparés pour ajout au panier :', itemsToAdd);
+
+      try {
+        // Envoyer la requête d'ajout au panier
+        const response = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: itemsToAdd })
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Erreur serveur Shopify :', errorText);
+          alert('Erreur lors de l\'ajout au panier : ' + errorText);
+          return;
+        }
+
+        const cartData = await response.json();
+        console.log('Produits ajoutés au panier :', cartData);
+
+        window.location.href = '/checkout';
+
+        // Fermer l'overlay après succès
+        overlay.classList.remove('visible-overlay');
+        alert('Produits ajoutés au panier avec succès !');
+      } catch (error) {
+        console.error('Erreur réseau ou autre lors de l\'ajout au panier :', error);
+        alert('Une erreur est survenue. Veuillez réessayer.');
+      }
+    });
   });
-
-  window.addEventListener('message', function (event) {
-    if (event.origin !== 'https://frontend-configurateur-emws.vercel.app') {
-      console.warn('Message non sécurisé ignoré.');
-      console.log(event.origin)
-      return;
-    }
-
-    console.log('Données JSON reçues de l\'iframe :', event.data);
-    const closeButton = document.getElementById('closePageButton');
-    closeButton.click();
-    alert(`L'utilisateur a soumis les données et a choisi la marque: ${event.data.marque}`)
-  });
-
-
 </script>
+
 
 {% schema %}
 {
-  "name": "Payment Icons",
+  "name": "Bouton configurateur",
   "target": "section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
   "settings": [
      {
-          "type": "text",
-          "id": "payment_text",
-          "label": "Texte",
-          "default": "Paiement sécurisé avec :"
-        }
+        "type": "text",
+        "id": "texte_bouton",
+        "label": "Texte sur le bouton",
+        "default": "Start customization"
+      },
+     {
+        "type": "color",
+        "id": "btn_color",
+        "label": "Sélectionner la couleur"
+      }
+
   ],
 }
 {% endschema %}
