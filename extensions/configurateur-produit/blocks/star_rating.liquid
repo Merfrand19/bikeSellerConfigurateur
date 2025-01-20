@@ -1,6 +1,13 @@
-<div class="nice-button-container">
-  <button id="openPageButton" class="nice-button" style="background-color: {{  block.settings.btn_color  }};"> {{ block.settings.texte_bouton }} </button>
+<div class="merfrand-configurateur-section">
+  <button id="openPageButton" class="nmerfrandbutton" 
+    style="background-color: {{ block.settings.btn_back_color }};
+            border: {{ block.settings.btn_back_color }}
+           font-size: {{ block.settings.btn_text_font_size }}; 
+           {% if block.settings.btn_is_bold %} font-weight: bold; {% endif %}">
+    {{ block.settings.texte_bouton }}
+  </button>
 </div>
+
 
 <div id="fullPageOverlay" class="hidden-overlay">
   <button id="closePageButton" class="close-button">&times;</button>
@@ -12,17 +19,18 @@
 
 <style>
   /* Bouton principal */
-.nice-button {
+.merfrand-button {
+  width: 100%;
   padding: 10px 20px;
   font-size: 16px;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 5rem;
   cursor: pointer;
   transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.nice-button:hover {
+.merfrand-button:hover {
   background-color: #005bb5;
   transform: scale(1.05);
 }
@@ -190,8 +198,24 @@ itemsToAdd.push({
       },
      {
         "type": "color",
-        "id": "btn_color",
-        "label": "Sélectionner la couleur"
+        "id": "btn_back_color",
+        "label": "Sélectionner la couleur de l'arrière plan"
+      },
+      {
+        "type": "color",
+        "id": "btn_text_color",
+        "label": "Sélectionner la couleur du texte"
+      },
+      {
+        "type": "number",
+        "id": "btn_text_font_size",
+        "label": "Taille de la police"
+      },
+      {
+        "type": "checkbox",
+        "id": "btn_is_bold",
+        "default": true,
+        "label": "Mettre le texte en gras"
       }
 
   ],
